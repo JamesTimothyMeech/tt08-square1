@@ -82,9 +82,9 @@ module tt_um_zec_square1 (
       {R, G, B} <= 6'd0;
     end
     else begin
-      R = in_frame ? {moving_x[5], vpos[2]} : 2'b00;
-      G = in_frame ? {moving_x[6], vpos[2]} : 2'b00;
-      B = in_frame ? {moving_x[7], vpos[5]} : 2'b00;
+      R <= in_frame ? {moving_x[5], vpos[2]} : 2'b00;
+      G <= in_frame ? {moving_x[6], vpos[2]} : 2'b00;
+      B <= in_frame ? {moving_x[7], vpos[5]} : 2'b00;
     end
   end
 
