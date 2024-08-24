@@ -60,6 +60,10 @@ module tt_um_zec_square1 (
   // last clock cycle's value of VSync
   reg prev_vsync;
 
+  reg [9:0] counter;
+
+  wire [9:0] moving_x = hpos + counter;
+
   always @(posedge clk) begin
     if (~rst_n) begin
       frame_no <= 9'd0;
@@ -78,9 +82,17 @@ module tt_um_zec_square1 (
       {R, G, B} <= 6'd0;
     end
     else begin
-      R = in_frame ? {moving_x[5], pix_y[2]} : 2'b00;
-      G = in_frame ? {moving_x[6], pix_y[2]} : 2'b00;
-      B = in_frame ? {moving_x[7], pix_y[5]} : 2'b00;
+      R = in_frame ? {moving_x[5], vpos[2]} : 2'b00;
+      G = in_frame ? {moving_x[6], vpos[2]} : 2'b00;
+      B = in_frame ? {moving_x[7], vpos[5]} : 2'b00;
+    end
+  end
+
+  always @(posedge vsync) begin
+    if (~rst_n) begin
+      counter <= 10'b0000000000;
+    end else begin
+      counter <= counter + 1'b1;
     end
   end
 
