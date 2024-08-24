@@ -17,7 +17,7 @@ module tt_um_zec_square1 (
 );
 
   // All output pins must be assigned. If not used, assign to 0.
-  assign uio_out[6:0] = 7'b0;
+  assign uio_out[7:0] = 8'b0;
   assign uio_oe  = 8'b1000_0000;
 
   // List all unused inputs to prevent warnings
