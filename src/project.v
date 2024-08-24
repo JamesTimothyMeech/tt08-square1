@@ -78,9 +78,9 @@ module tt_um_zec_square1 (
       {R, G, B} <= 6'd0;
     end
     else begin
-      R = video_active ? {moving_x[5], pix_y[2]} : 2'b00;
-      G = video_active ? {moving_x[6], pix_y[2]} : 2'b00;
-      B = video_active ? {moving_x[7], pix_y[5]} : 2'b00;
+      R = in_frame ? {moving_x[5], pix_y[2]} : 2'b00;
+      G = in_frame ? {moving_x[6], pix_y[2]} : 2'b00;
+      B = in_frame ? {moving_x[7], pix_y[5]} : 2'b00;
     end
   end
 
