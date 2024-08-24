@@ -66,7 +66,7 @@ module tt_um_zec_square1 (
       prev_vsync <= 1;
     end
     else begin
-      if (vsync & ~prev_vsync) begin // positive edge
+      if (vsync & ~prev_vsync) begin 
         frame_no <= frame_no + 9'd1;
       end
       prev_vsync <= vsync;
