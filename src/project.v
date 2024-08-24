@@ -73,89 +73,15 @@ module tt_um_zec_square1 (
     end
   end
 
-
-  // number of frames we emulate phosphor persistence for
-  `define N_LAG 15
-
-  // color_controls[i] and color are 3-bit color indexes where
-  // 3'b0_00 is black, 3'b0_11 is bright cyan, and 3'b1_xx is shades of yellow
-
-  wire [2:0] color_controls [(`N_LAG-1):0];
-  assign color_controls[0]  = 3'b0_11; // bright cyan for lag 0...
-  assign color_controls[1]  = 3'b1_11; // ...changing to bright yellow...
-  assign color_controls[2]  = 3'b1_11;
-  assign color_controls[3]  = 3'b1_10; // ...fading...
-  assign color_controls[4]  = 3'b1_10;
-  assign color_controls[5]  = 3'b1_10;
-  assign color_controls[6]  = 3'b1_10;
-  assign color_controls[7]  = 3'b1_01; // ...to dim yellow...
-  assign color_controls[8]  = 3'b1_01;
-  assign color_controls[9]  = 3'b1_01;
-  assign color_controls[10] = 3'b1_01;
-  assign color_controls[11] = 3'b1_01;
-  assign color_controls[12] = 3'b1_01;
-  assign color_controls[13] = 3'b1_01;
-  assign color_controls[14] = 3'b1_01; // ...before going black after lag 14.
-
-  wire [2:0] color_maybe [(`N_LAG-1):0];
-
-  genvar i, j;
-  generate
-    for (i = 0; i < `N_LAG; i = i + 1) begin
-      wire [8:0] delay = i;
-      // here's the actual munching-squares algorithm:
-      assign color_maybe[i] = (hpos[8:0] == (vpos[8:0] ^ (frame_no - delay))) ? color_controls[i] : 3'b0_00;
-    end
-  endgenerate
-
-  // we can only do reducing operations over the least-significant dimension,
-  // so we need to exchange dimensions in color_maybe before calculating
-  // color
-  wire [(`N_LAG-1):0] cm_transposed [2:0];
-
-  generate
-    for (i = 0; i < `N_LAG; i = i + 1) begin
-      for (j = 0; j < 3; j = j + 1) begin
-        assign cm_transposed[j][i] = color_maybe[i][j];
-      end
-    end
-  endgenerate
-
-  wire [2:0] color;
-
-  generate
-    for (i = 0; i < 3; i = i + 1) begin
-      assign color[i] = rst_n & |cm_transposed[i];
-    end
-  endgenerate
-
   always @(posedge clk) begin
     if (!rst_n) begin
       {R, G, B} <= 6'd0;
     end
     else begin
-      // map from 3-bit color indexes to color components, and clip to
-      // a 512x480 window
-      R <= ((vpos < 480) & (hpos < 512)) ? color[1:0] & {2{color[2]}} : 2'b00;
-      G <= ((vpos < 480) & (hpos < 512)) ? color[1:0] : 2'b00;
-      B <= ((vpos < 480) & (hpos < 512)) ? color[1:0] & {2{~color[2]}} : 2'b00;
+      R = video_active ? {moving_x[5], pix_y[2]} : 2'b00;
+      G = video_active ? {moving_x[6], pix_y[2]} : 2'b00;
+      B = video_active ? {moving_x[7], pix_y[5]} : 2'b00;
     end
   end
-
-
-  // our sound, neatly contained in a module:
-
-  logistic_snd #(
-    .N_OSC(8),
-    .ITER_LEN(15_361),
-    .R_INC(2),
-    .FRAC(16),
-    .PHASE_BITS(16),
-    .FREQ_RES(0)
-  ) project_audio(
-    .clk(clk),
-    .reset(~rst_n),
-    .snd(uio_out[7])
-  );
 
 endmodule

@@ -19,12 +19,6 @@ project:
   source_files:
     - "project.v"
     - "hvsync_generator.v"
-    - "logistic_snd.v"
-    - "logs_iterate_map.v"
-    - "logs_mixer.v"
-    - "logs_popcount.v"
-    - "logs_nco.v"
-    - "logs_divider.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
